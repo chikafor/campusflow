@@ -11,11 +11,7 @@ _PRIORITIES = ("critical", "high", "medium", "low")
 
 
 def generate_report(tickets: Iterable[Ticket]) -> dict[str, Any]:
-    """Return total, status counts, and priority counts.
-
-    Every supported status and priority is included, even when its count is
-    zero. The input iterable is read but never modified.
-    """
+    """Return ticket totals, status counts, priority counts, and resolution percentage."""
     status_counts = {status: 0 for status in _STATUSES}
     priority_counts = {priority: 0 for priority in _PRIORITIES}
     total = 0
@@ -33,8 +29,12 @@ def generate_report(tickets: Iterable[Ticket]) -> dict[str, Any]:
         status_counts[status] += 1
         priority_counts[priority] += 1
 
+    resolved = status_counts["resolved"]
+    resolution_percentage = resolved * 100 / total if total else 0.0
+
     return {
         "total": total,
         "by_status": status_counts,
         "by_priority": priority_counts,
+        "resolution_percentage": resolution_percentage,
     }
