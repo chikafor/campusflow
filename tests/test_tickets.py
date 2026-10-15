@@ -8,6 +8,7 @@ from campusflow.tickets import (
     search_tickets,
 )
 
+
 class TicketTests(unittest.TestCase):
     def setUp(self):
         self.tickets = []
@@ -100,14 +101,128 @@ class TicketTests(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["id"], 1)
 
+    def test_search_tickets_filters_by_status(self):
+        tickets = [
+            {
+                "id": 1,
+                "title": "Network Problem",
+                "category": "Network",
+                "urgency": "high",
+                "priority": "high",
+                "status": "open",
+                "assigned_to": None,
+            },
+            {
+                "id": 2,
+                "title": "Broken Laptop",
+                "category": "Hardware",
+                "urgency": "low",
+                "priority": "low",
+                "status": "resolved",
+                "assigned_to": "Temple",
+            },
+        ]
+
+        results = search_tickets(tickets, status="open")
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], 1)
+
+    def test_search_tickets_filters_by_priority(self):
+        tickets = [
+            {
+                "id": 1,
+                "title": "Network Problem",
+                "category": "Network",
+                "urgency": "high",
+                "priority": "high",
+                "status": "open",
+                "assigned_to": None,
+            },
+            {
+                "id": 2,
+                "title": "Broken Laptop",
+                "category": "Hardware",
+                "urgency": "low",
+                "priority": "low",
+                "status": "open",
+                "assigned_to": None,
+            },
+        ]
+
+        results = search_tickets(tickets, priority="HIGH")
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], 1)
+
+    def test_search_tickets_filters_by_category(self):
+        tickets = [
+            {
+                "id": 1,
+                "title": "Network Problem",
+                "category": "Network",
+                "urgency": "high",
+                "priority": "high",
+                "status": "open",
+                "assigned_to": None,
+            },
+            {
+                "id": 2,
+                "title": "Broken Laptop",
+                "category": "Hardware",
+                "urgency": "low",
+                "priority": "low",
+                "status": "open",
+                "assigned_to": None,
+            },
+        ]
+
+        results = search_tickets(tickets, category="network")
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], 1)
+
+    def test_search_tickets_combines_query_and_filters(self):
+        tickets = [
+            {
+                "id": 1,
+                "title": "Network Problem",
+                "category": "Network",
+                "urgency": "high",
+                "priority": "high",
+                "status": "open",
+                "assigned_to": None,
+            },
+            {
+                "id": 2,
+                "title": "Network Outage",
+                "category": "Network",
+                "urgency": "high",
+                "priority": "high",
+                "status": "resolved",
+                "assigned_to": "Temple",
+            },
+            {
+                "id": 3,
+                "title": "Broken Laptop",
+                "category": "Hardware",
+                "urgency": "low",
+                "priority": "low",
+                "status": "open",
+                "assigned_to": None,
+            },
+        ]
+
+        results = search_tickets(
+            tickets,
+            query="network",
+            status="open",
+            category="Network",
+        )
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
-
-      
-
-    
-
-
-
-
