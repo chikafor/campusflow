@@ -13,7 +13,7 @@ from typing import Any, Callable
 
 from campusflow.reports import generate_report
 from campusflow.storage import StorageError, load_tickets, save_tickets
-from campusflow.tickets import create_ticket, find_ticket
+from campusflow.tickets import create_ticket, find_ticket, search_tickets
 from campusflow.workflow import (
     assign_ticket,
     change_status,
@@ -125,6 +125,23 @@ def view_ticket_menu(tickets: list[Ticket]) -> None:
     except (ValueError, KeyError) as exc:
         print(f"Error: {exc}")
 
+def search_tickets_menu(tickets: list[Ticket]) -> None:
+    print("\nSearch tickets")
+    query = input("Search word or phrase (press Enter to skip): ").strip()
+    status = input("Status filter (open/in_progress/resolved, Enter to skip): ").strip()
+    priority = input("Priority filter (low/medium/high/critical, Enter to skip): ").strip()
+    category = input("Category filter (Network/Hardware/Software/Other, Enter to skip): ").strip()
+
+    results = search_tickets(
+        tickets,
+        query=query,
+        status=status or None,
+        priority=priority or None,
+        category=category or None,
+    )
+
+    print(f"\nFound {len(results)} matching ticket(s).")
+    print_ticket_list(results)
 
 def assign_ticket_menu(tickets: list[Ticket], data_path: Path) -> None:
     try:
@@ -217,7 +234,8 @@ def print_menu() -> None:
         "6. Reopen resolved ticket\n"
         "7. Show open queue\n"
         "8. Generate report\n"
-        "9. Exit"
+        "9. search tickets\n"
+        "10. Exit"
     )
 
 
@@ -243,19 +261,20 @@ def main() -> int:
         "6": lambda: reopen_ticket_menu(tickets, args.data),
         "7": lambda: show_open_queue(tickets),
         "8": lambda: show_report(tickets),
+        "9": lambda: search_tickets_menu(tickets),
     }
 
     while True:
         print_menu()
-        choice = input("Choose an option (1-9): ").strip()
+        choice = input("Choose an option (1-10): ").strip()
 
-        if choice == "9":
+        if choice == "10":
             print("CampusFlow closed.")
             return 0
 
         action = actions.get(choice)
         if action is None:
-            print("Invalid choice. Enter a number from 1 to 9.")
+            print("Invalid choice. Enter a number from 1 to 10.")
             continue
 
         try:

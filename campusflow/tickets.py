@@ -111,3 +111,61 @@ def create_ticket(tickets, title, category, urgency, affected_users):
 
     tickets.append(ticket)
     return ticket
+
+def search_tickets(
+    tickets,
+    query="",
+    status=None,
+    priority=None,
+    category=None,
+):
+    """Search tickets using text and optional filters."""
+
+    if not isinstance(query, str):
+        raise ValueError("Search query must be a string")
+
+    query = query.strip().casefold()
+
+    filters = {
+        "status": status,
+        "priority": priority,
+        "category": category,
+    }
+
+    for field, value in filters.items():
+        if value is not None:
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(
+                    f"{field.title()} filter must be a non-empty string"
+                )
+            filters[field] = value.strip().casefold()
+
+    results = []
+
+    for ticket in tickets:
+        searchable_text = " ".join(
+            str(ticket.get(field) or "")
+            for field in (
+                "id",
+                "title",
+                "category",
+                "urgency",
+                "priority",
+                "status",
+                "assigned_to",
+            )
+        ).casefold()
+
+        if query and query not in searchable_text:
+            continue
+
+        if any(
+            value is not None
+            and str(ticket.get(field) or "").casefold() != value
+            for field, value in filters.items()
+        ):
+            continue
+
+        results.append(ticket)
+
+    return results

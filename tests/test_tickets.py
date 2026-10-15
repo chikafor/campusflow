@@ -5,6 +5,7 @@ from campusflow.tickets import (
     create_ticket,
     find_ticket,
     get_next_ticket_id,
+    search_tickets,
 )
 
 class TicketTests(unittest.TestCase):
@@ -81,8 +82,31 @@ class TicketTests(unittest.TestCase):
         with self.assertRaises(KeyError):
             find_ticket(self.tickets, 99)
 
+    def test_search_tickets_matches_title_case_insensitively(self):
+        tickets = [
+            {
+                "id": 1,
+                "title": "Network Problem",
+                "category": "Network",
+                "urgency": "high",
+                "priority": "high",
+                "status": "open",
+                "assigned_to": None,
+            }
+        ]
+
+        results = search_tickets(tickets, query="network")
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()
+
+      
+
+    
 
 
 

@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "title": "wifi not working",
+    "category": "Network",
+    "urgency": "high",
+    "affected_users": 15,
+    "priority": "critical",
+    "status": "open",
+    "assigned_to": null
+  }
+]
