@@ -104,6 +104,72 @@ def _validate_tickets(tickets):
                 f"{location} has an invalid assigned_to value."
             )
 
+            # Validate notes when present. Older tickets may not have this field.
+        notes = ticket.get("notes", [])
+
+        if not isinstance(notes, list):
+            raise StorageError(
+                f"{location} has an invalid notes field."
+            )
+
+        seen_note_ids = set()
+
+        for note_index, note in enumerate(notes):
+            note_location = (
+                f"{location}, note at index {note_index}"
+            )
+
+            if not isinstance(note, dict):
+                raise StorageError(
+                    f"{note_location} must be an object."
+                )
+
+            required_note_fields = {"note_id", "author", "message"}
+            missing_note_fields = required_note_fields - note.keys()
+
+            if missing_note_fields:
+                fields = ", ".join(sorted(missing_note_fields))
+                raise StorageError(
+                    f"{note_location} is missing fields: {fields}."
+                )
+
+            note_id = note["note_id"]
+
+            if (
+                not isinstance(note_id, str)
+                or not note_id.startswith("N")
+                or len(note_id[1:]) < 3
+                or not note_id[1:].isdigit()
+            ):
+                raise StorageError(
+                    f"{note_location} has an invalid note ID."
+                )
+
+            if note_id in seen_note_ids:
+                raise StorageError(
+                    f"Duplicate note ID {note_id} within ticket "
+                    f"{ticket['id']}."
+                )
+
+            seen_note_ids.add(note_id)
+
+            author = note["author"]
+
+            if not isinstance(author, str) or not author.strip():
+                raise StorageError(
+                    f"{note_location} has an invalid author."
+                )
+
+            message = note["message"]
+
+            if (
+                not isinstance(message, str)
+                or not 5 <= len(message.strip()) <= 300
+            ):
+                raise StorageError(
+                    f"{note_location} has an invalid message. "
+                    "Messages must contain 5 to 300 characters."
+                )
 
 def load_tickets(path):
     # Load and validate tickets; a missing file means a fresh start.

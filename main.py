@@ -13,7 +13,7 @@ from typing import Any, Callable
 
 from campusflow.reports import generate_report
 from campusflow.storage import StorageError, load_tickets, save_tickets
-from campusflow.tickets import create_ticket, find_ticket
+from campusflow.tickets import add_note, create_ticket, find_ticket
 from campusflow.workflow import (
     assign_ticket,
     change_status,

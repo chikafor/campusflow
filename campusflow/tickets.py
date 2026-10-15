@@ -106,8 +106,50 @@ def create_ticket(tickets, title, category, urgency, affected_users):
         "affected_users": affected_users,
         "priority": priority,
         "status": "open",
-        "assigned_to": None
+        "assigned_to": None,
+        "notes": []
     }
 
     tickets.append(ticket)
     return ticket
+
+
+def add_note(tickets, ticket_id, author, message):
+    """Add a note to an open or in-progress ticket."""
+    ticket = find_ticket(tickets, ticket_id)
+
+    if ticket["status"] not in ("open", "in_progress"):
+        raise ValueError("Notes can only be added to open or in-progress tickets.")
+
+    if not isinstance(author, str) or not author.strip():
+        raise ValueError("Note author cannot be blank.")
+
+    if not isinstance(message, str):
+        raise ValueError("Note message must be text.")
+
+    author = author.strip()
+    message = message.strip()
+
+    if not 5 <= len(message) <= 300:
+        raise ValueError("Note message must contain 5 to 300 characters.")
+
+    notes = ticket.setdefault("notes", [])
+
+    note_numbers = [
+    int(note["note_id"][1:])
+    for note in notes
+    if isinstance(note.get("note_id"), str)
+    and note["note_id"].startswith("N")
+    and note["note_id"][1:].isdigit()
+    ]
+
+    note_id = f"N{max(note_numbers, default=0) + 1:03d}"
+
+    note = {
+        "note_id": note_id,
+        "author": author,
+        "message": message,
+    }
+
+    notes.append(note)
+    return note

@@ -5,11 +5,21 @@ from campusflow.tickets import (
     create_ticket,
     find_ticket,
     get_next_ticket_id,
+    add_note,
 )
 
 class TicketTests(unittest.TestCase):
     def setUp(self):
         self.tickets = []
+    
+    def make_ticket(self):
+        return create_ticket(
+            self.tickets,
+            title="Network connection issue",
+            category="Network",
+            urgency="high",
+            affected_users=10,
+        )
 
     def test_create_using_expected_defaults(self):
         ticket = create_ticket(
@@ -80,6 +90,103 @@ class TicketTests(unittest.TestCase):
     def test_find_unknown_ticket_raises_key_error(self):
         with self.assertRaises(KeyError):
             find_ticket(self.tickets, 99)
+    
+
+    def test_add_note_to_open_ticket(self):
+        ticket = self.make_ticket()
+
+        note = add_note(
+        self.tickets,
+        ticket["id"],
+        " Chika ",
+        " Investigating the network issue. ",
+        )
+
+        self.assertEqual(note["note_id"], "N001")
+        self.assertEqual(note["author"], "Chika")
+        self.assertEqual(
+        note["message"],
+        "Investigating the network issue.",
+        )
+        self.assertEqual(ticket["notes"], [note])
+
+
+    def test_add_note_rejects_blank_author(self):
+        ticket = self.make_ticket()
+
+        with self.assertRaises(ValueError):
+            add_note(
+                self.tickets,
+                ticket["id"],
+                "   ",
+                "Investigating the network issue.",
+            )
+
+        self.assertEqual(ticket["notes"], [])
+
+
+    def test_add_note_rejects_short_message(self):
+        ticket = self.make_ticket()
+
+        with self.assertRaises(ValueError):
+            add_note(
+                self.tickets,
+                ticket["id"],
+                "Chika",
+                "Test",
+            )
+
+        self.assertEqual(ticket["notes"], [])
+
+
+    def test_add_note_rejects_long_message(self):
+        ticket = self.make_ticket()
+
+        with self.assertRaises(ValueError):
+            add_note(
+                self.tickets,
+                ticket["id"],
+                "Chika",
+                "A" * 301,
+            )
+
+        self.assertEqual(ticket["notes"], [])
+
+
+    def test_note_ids_increase(self):
+        ticket = self.make_ticket()
+
+        first = add_note(
+            self.tickets,
+            ticket["id"],
+            "Chika",
+            "First investigation update.",
+        )
+
+        second = add_note(
+            self.tickets,
+            ticket["id"],
+            "Chika",
+            "Second investigation update.",
+        )
+
+        self.assertEqual(first["note_id"], "N001")
+        self.assertEqual(second["note_id"], "N002")
+
+
+    def test_add_note_rejects_resolved_ticket(self):
+        ticket = self.make_ticket()
+        ticket["status"] = "resolved"
+
+        with self.assertRaises(ValueError):
+            add_note(
+                self.tickets,
+                ticket["id"],
+                "Chika",
+                "Investigation completed successfully.",
+            )
+
+        self.assertEqual(ticket["notes"], [])
 
 if __name__ == "__main__":
     unittest.main()
