@@ -77,6 +77,12 @@ Persist tickets as JSON using the standard library.
 - ID allocation after reload must avoid collisions.
 - Save after each successful mutation. Do not save a rejected operation as a successful change.
 
+### Startup loading policy
+
+CampusFlow loads ticket data once during application startup. If loading fails because the stored data is malformed or invalid, the application reports a startup error and exits with a nonzero status. It does not continue with an empty ticket collection, preventing normal application operations from accidentally overwriting the invalid data.
+
+Runtime reloads are not currently supported. If runtime reload functionality is introduced later, its error-handling and data-preservation behavior must be tested separately.
+
 Expected exceptions:
 - `ValueError`: invalid business input, invalid transition, or invalid assignment.
 - `KeyError`: requested ticket ID does not exist.
