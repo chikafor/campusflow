@@ -1,20 +1,13 @@
 # AI Learning Log
 
-Record genuine AI-assisted learning interactions here. Each engineer must document at least three real interactions. Write the outcome in your own words and include evidence of independent verification. Do not invent prompts or experiments.
+## Entry 1 — Understanding ticket search and filters
 
-## Entry template
-
-### Entry [number] — [short topic]
-
-- **Engineer:** [GitHub username]
-- **Date/time:** [when the interaction happened]
-- **Actual prompt or question:** [paste the prompt/question actually used]
-- **AI response or idea tested:** [brief summary]
-- **Experiment or application:** [what you tried]
-- **Independent verification:** [test, documentation, manual check, or other evidence]
-- **Outcome in my own words:** [what you learned and whether the idea worked]
-- **Correction/rejection (if applicable):** [what was wrong or unsuitable, how you established that, and what you did instead]
-
----
-
-Duplicate the entry template for each real interaction. At least one entry across the team must show a verified correction or rejection of an AI suggestion.
+- **Engineer:** chikafor (Engineer B)
+- **Date:** 2026-10-16
+- **Question discussed:** How do ticket search and filters work when a ticket must match more than one condition?
+- **AI response or idea tested:** I learned that AND filtering requires a ticket to satisfy every selected condition.
+- **Experiment or application:** I practised identifying whether tickets matched both the Network category and Open status.
+- **Independent verification:** I located the search tests using grep and ran `python3 -m unittest discover -s tests -p 'test_tickets.py' -v`.
+- **Verification result:** All 21 tests passed, including tests for case-insensitive search, category filtering, AND logic, and searches with no matches.
+- **Outcome in my own words:** I learned that AND filtering means all selected conditions must match. I also learned how to locate the relevant tests and run the correct test file.
+- **Correction or rejection:** My first test command targeted `tests.test_search`, but that module did not exist. I checked the test directory, found the search tests in `test_tickets.py`, and ran the correct command successfully.
