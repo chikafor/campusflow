@@ -6,6 +6,7 @@ from campusflow.tickets import (
     find_ticket,
     get_next_ticket_id,
     add_note,
+    search_tickets,
 )
 
 class TicketTests(unittest.TestCase):
@@ -209,6 +210,30 @@ class TicketTests(unittest.TestCase):
 
         self.assertEqual(note["note_id"], "N001")
         self.assertEqual(len(ticket["notes"]), 1)
+
+
+    def test_search_is_case_insensitive(self):
+        self.make_ticket()
+        results = search_tickets(self.tickets, query="NETWORK")
+        self.assertEqual([ticket["id"] for ticket in results], [1])
+
+    def test_search_category_filter(self):
+        self.make_ticket()
+        create_ticket(self.tickets, "Broken laptop", "Hardware", "low", 1)
+        results = search_tickets(self.tickets, category="hardware")
+        self.assertEqual([ticket["title"] for ticket in results], ["Broken laptop"])
+
+    def test_search_filters_use_and_logic(self):
+        self.make_ticket()
+        create_ticket(self.tickets, "Network cable", "Network", "low", 1)
+        results = search_tickets(
+            self.tickets, query="network", status="open", priority="critical"
+        )
+        self.assertEqual([ticket["id"] for ticket in results], [1])
+
+    def test_search_with_no_matches_returns_empty_list(self):
+        self.make_ticket()
+        self.assertEqual(search_tickets(self.tickets, query="printer"), [])
 
 if __name__ == "__main__":
     unittest.main()

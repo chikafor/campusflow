@@ -33,8 +33,12 @@ def generate_report(tickets: Iterable[Ticket]) -> dict[str, Any]:
         status_counts[status] += 1
         priority_counts[priority] += 1
 
+    resolved = status_counts["resolved"]
+    resolution_percentage = (resolved / total * 100) if total else 0.0
+
     return {
         "total": total,
         "by_status": status_counts,
         "by_priority": priority_counts,
+        "resolution_percentage": resolution_percentage,
     }

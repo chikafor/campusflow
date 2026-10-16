@@ -30,6 +30,7 @@ class GenerateReportTests(unittest.TestCase):
         report = generate_report([])
 
         self.assertEqual(report["total"], 0)
+        self.assertEqual(report["resolution_percentage"], 0.0)
         self.assertEqual(
             report["by_status"],
             {"open": 0, "in_progress": 0, "resolved": 0},
@@ -38,6 +39,25 @@ class GenerateReportTests(unittest.TestCase):
             report["by_priority"],
             {"critical": 0, "high": 0, "medium": 0, "low": 0},
         )
+
+    def test_resolution_percentage(self):
+        four_tickets = [
+            {"status": "resolved", "priority": "high"},
+            {"status": "resolved", "priority": "medium"},
+            {"status": "open", "priority": "low"},
+            {"status": "in_progress", "priority": "low"},
+        ]
+        ten_tickets = four_tickets + [
+            {"status": "open", "priority": "low"},
+            {"status": "open", "priority": "low"},
+            {"status": "open", "priority": "low"},
+            {"status": "open", "priority": "low"},
+            {"status": "open", "priority": "low"},
+            {"status": "open", "priority": "low"},
+        ]
+
+        self.assertEqual(generate_report(four_tickets)["resolution_percentage"], 50.0)
+        self.assertEqual(generate_report(ten_tickets)["resolution_percentage"], 20.0)
 
     def test_unknown_status_is_rejected(self):
         with self.assertRaises(ValueError):

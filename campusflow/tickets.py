@@ -85,6 +85,51 @@ def find_ticket(tickets, ticket_id):
 
     raise KeyError(f"Ticket")
 
+
+def search_tickets(
+    tickets,
+    query="",
+    status=None,
+    priority=None,
+    category=None,
+):
+    """Search tickets by text and optional AND-combined filters."""
+    if not isinstance(query, str):
+        raise ValueError("Search query must be text.")
+
+    filters = {
+        "status": status,
+        "priority": priority,
+        "category": category,
+    }
+    for name, value in filters.items():
+        if value is not None and (
+            not isinstance(value, str) or not value.strip()
+        ):
+            raise ValueError(f"{name.title()} filter must be nonblank text.")
+
+    normalized_query = query.strip().casefold()
+    results = []
+
+    for ticket in tickets:
+        searchable_text = " ".join(
+            str(ticket.get(field, ""))
+            for field in ("title", "category")
+        ).casefold()
+
+        if normalized_query and normalized_query not in searchable_text:
+            continue
+        if status is not None and str(ticket.get("status", "")).casefold() != status.strip().casefold():
+            continue
+        if priority is not None and str(ticket.get("priority", "")).casefold() != priority.strip().casefold():
+            continue
+        if category is not None and str(ticket.get("category", "")).casefold() != category.strip().casefold():
+            continue
+
+        results.append(ticket)
+
+    return results
+
 def create_ticket(tickets, title, category, urgency, affected_users):
     #Validate and  append a new ticket, rteturning the new record.
     if not isinstance(title, str) or not title.strip():

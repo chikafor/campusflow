@@ -13,7 +13,7 @@ from typing import Any, Callable
 
 from campusflow.reports import generate_report
 from campusflow.storage import StorageError, load_tickets, save_tickets
-from campusflow.tickets import add_note, create_ticket, find_ticket
+from campusflow.tickets import add_note, create_ticket, find_ticket, search_tickets
 from campusflow.workflow import (
     assign_ticket,
     change_status,
@@ -192,10 +192,67 @@ def show_open_queue(tickets: list[Ticket]) -> None:
         )
 
 
+
+def add_note_menu(tickets: list[Ticket], data_path: Path) -> None:
+    print("\nAdd a ticket note")
+    try:
+        ticket_id = prompt_positive_integer("Ticket ID: ")
+    except ValueError as exc:
+        print(f"Error: {exc}")
+        return
+
+    author = input("Your name: ").strip()
+    message = input("Note (5-300 characters): ")
+
+    note = run_mutation(
+        tickets,
+        data_path,
+        lambda: add_note(tickets, ticket_id, author, message),
+    )
+    if note is not None:
+        print(f"Note {note['note_id']} added to ticket #{ticket_id}.")
+
+
+def view_notes_menu(tickets: list[Ticket]) -> None:
+    try:
+        ticket_id = prompt_positive_integer("Ticket ID: ")
+        ticket = find_ticket(tickets, ticket_id)
+    except (ValueError, KeyError) as exc:
+        print(f"Error: {exc}")
+        return
+
+    notes = ticket.get("notes", [])
+    print(f"\nNotes for ticket #{ticket_id}:")
+    if not notes:
+        print("No notes found.")
+        return
+
+    for note in notes:
+        print(f"[{note['note_id']}] {note['author']}: {note['message']}")
+
+
+def search_tickets_menu(tickets: list[Ticket]) -> None:
+    print("\\nSearch tickets (leave a filter blank to skip it)")
+    query = input("Search title/category text: ").strip()
+    status = input("Status (open/in_progress/resolved): ").strip() or None
+    priority = input("Priority (critical/high/medium/low): ").strip() or None
+    category = input("Category (Network/Hardware/Software/Other): ").strip() or None
+
+    results = search_tickets(
+        tickets,
+        query=query,
+        status=status,
+        priority=priority,
+        category=category,
+    )
+    print(f"\\nFound {len(results)} matching ticket(s).")
+    print_ticket_list(results)
+
 def show_report(tickets: list[Ticket]) -> None:
     report = generate_report(tickets)
     print("\nCampusFlow report")
     print(f"Total tickets: {report['total']}")
+    print(f"Resolution percentage: {report['resolution_percentage']:.1f}%")
 
     print("\nBy status:")
     for status, count in report["by_status"].items():
@@ -217,7 +274,10 @@ def print_menu() -> None:
         "6. Reopen resolved ticket\n"
         "7. Show open queue\n"
         "8. Generate report\n"
-        "9. Exit"
+        "9. Search tickets\n"
+        "10. Add a ticket note\n"
+        "11. View ticket notes\n"
+        "12. Exit"
     )
 
 
@@ -243,19 +303,22 @@ def main() -> int:
         "6": lambda: reopen_ticket_menu(tickets, args.data),
         "7": lambda: show_open_queue(tickets),
         "8": lambda: show_report(tickets),
+        "9": lambda: search_tickets_menu(tickets),
+        "10": lambda: add_note_menu(tickets, args.data),
+        "11": lambda: view_notes_menu(tickets),
     }
 
     while True:
         print_menu()
-        choice = input("Choose an option (1-9): ").strip()
+        choice = input("Choose an option (1-12): ").strip()
 
-        if choice == "9":
+        if choice == "12":
             print("CampusFlow closed.")
             return 0
 
         action = actions.get(choice)
         if action is None:
-            print("Invalid choice. Enter a number from 1 to 9.")
+            print("Invalid choice. Enter a number from 1 to 12.")
             continue
 
         try:
