@@ -2,6 +2,8 @@
 
 import unittest
 
+from campusflow.tickets import add_note
+
 from campusflow.workflow import (
     assign_ticket,
     change_status,
@@ -92,6 +94,24 @@ class WorkflowTransitionTests(unittest.TestCase):
         self.tickets[0]["status"] = "resolved"
         result = reopen_ticket(self.tickets, 1)
         self.assertEqual(result["status"], "open")
+    
+    def test_notes_survive_resolution_and_reopening(self):
+        ticket = self.tickets[0]
+        ticket["assigned_to"] = "Alex"
+
+        note = add_note(
+            self.tickets,
+            ticket["id"],
+            "Chika",
+            "Investigating the reported issue.",
+        )
+
+        change_status(self.tickets, ticket["id"], "in_progress")
+        change_status(self.tickets, ticket["id"], "resolved")
+        reopen_ticket(self.tickets, ticket["id"])
+
+        self.assertEqual(ticket["status"], "open")
+        self.assertEqual(ticket["notes"], [note])
 
 
 class QueueTests(unittest.TestCase):

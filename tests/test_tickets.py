@@ -188,6 +188,28 @@ class TicketTests(unittest.TestCase):
 
         self.assertEqual(ticket["notes"], [])
 
+    
+    def test_invalid_note_does_not_consume_note_id(self):
+        ticket = self.make_ticket()
+
+        with self.assertRaises(ValueError):
+            add_note(
+                self.tickets,
+                ticket["id"],
+                "Chika",
+                "Bad",
+            )
+
+        note = add_note(
+            self.tickets,
+            ticket["id"],
+            "Chika",
+            "Valid investigation update.",
+        )
+
+        self.assertEqual(note["note_id"], "N001")
+        self.assertEqual(len(ticket["notes"]), 1)
+
 if __name__ == "__main__":
     unittest.main()
 
