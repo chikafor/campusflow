@@ -14,6 +14,7 @@ from typing import Any, Callable
 from campusflow.reports import generate_report
 from campusflow.storage import StorageError, load_tickets, save_tickets
 from campusflow.tickets import add_note, create_ticket, find_ticket, search_tickets
+from campusflow.understanding_check import run_understanding_check
 from campusflow.workflow import (
     assign_ticket,
     change_status,
@@ -277,7 +278,8 @@ def print_menu() -> None:
         "9. Search tickets\n"
         "10. Add a ticket note\n"
         "11. View ticket notes\n"
-        "12. Exit"
+        "12. Engineering Understanding Check\n"
+        "13. Exit"
     )
 
 
@@ -306,19 +308,20 @@ def main() -> int:
         "9": lambda: search_tickets_menu(tickets),
         "10": lambda: add_note_menu(tickets, args.data),
         "11": lambda: view_notes_menu(tickets),
+        "12": lambda: run_understanding_check(),
     }
 
     while True:
         print_menu()
-        choice = input("Choose an option (1-12): ").strip()
+        choice = input("Choose an option (1-13): ").strip()
 
-        if choice == "12":
+        if choice == "13":
             print("CampusFlow closed.")
             return 0
 
         action = actions.get(choice)
         if action is None:
-            print("Invalid choice. Enter a number from 1 to 12.")
+            print("Invalid choice. Enter a number from 1 to 13.")
             continue
 
         try:
