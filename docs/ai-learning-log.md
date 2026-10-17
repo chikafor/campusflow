@@ -2,7 +2,7 @@
 
 ## Entry 1 — Understanding ticket search and filters
 
-- **Engineer:** chikafor (Engineer B)
+- **Engineer:** Izuchukwu Christian (`Temple-Daemon`) (Engineer B)
 - **Date:** 2026-10-16
 - **Question discussed:** How do ticket search and filters work when a ticket must match more than one condition?
 - **AI response or idea tested:** I learned that AND filtering requires a ticket to satisfy every selected condition.
@@ -13,7 +13,7 @@
 - **Correction or rejection:** My first test command targeted `tests.test_search`, but that module did not exist. I checked the test directory, found the search tests in `test_tickets.py`, and ran the correct command successfully.
 ## Entry 2 — Understanding resolution percentage
 
-- **Engineer:** chikafor (Engineer B)
+- **Engineer:** Izuchukwu Christian (`Temple-Daemon`) (Engineer B)
 - **Date:** 2026-10-15
 - **Question discussed (summary, not a verbatim quote):** How is the ticket resolution percentage calculated, including when there are no tickets?
 - **AI response or idea tested:** We discussed calculating the percentage of tickets resolved out of the total number of tickets, and returning 0% when the total is zero.
@@ -24,7 +24,7 @@
 
 ## Entry 3 — Correcting a test-file issue
 
-- **Engineer:** chikafor (Engineer B)
+- **Engineer:** Izuchukwu Christian (`Temple-Daemon`) (Engineer B)
 - **Date:** 2026-10-16
 - **Problem discussed (summary, not a verbatim quote):** Stray text was found in `tests/test_tickets.py`.
 - **AI response or idea tested:** We identified that the stray text needed to be removed, then the tests needed to be run to check the correction.

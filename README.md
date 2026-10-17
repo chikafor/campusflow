@@ -24,8 +24,8 @@ CampusFlow is a Python command-line support ticket tracker built for the AI-Nati
 
 ## Team
 
-- Engineer A: Bront888 — ticket foundation and JSON persistence.
-- Engineer B: chikafor — ticket search and filters, reporting, and Engineering Understanding Check.
+- Engineer A: Chika Okafor (`chikafor`) — ticket foundation, validation, priority, and JSON persistence.
+- Engineer B: Izuchukwu Christian (`Temple-Daemon`) — ticket search and filters, reporting, and Engineering Understanding Check.
 
 ## Design decisions
 

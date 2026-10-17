@@ -113,8 +113,8 @@ Function names, arguments, return shapes, and error behavior are shared contract
 
 ## 9. Team ownership and integration
 
-- Engineer A: Bront888 — ticket creation/validation/priority and JSON persistence.
-- Engineer B: chikafor — assignment, workflow, queue, and reports.
+- Engineer A: Chika Okafor (`chikafor`) — ticket creation, validation, priority, and JSON persistence.
+- Engineer B: Izuchukwu Christian (`Temple-Daemon`) — ticket search and filters, reporting, and Engineering Understanding Check.
 - Both engineers: agree on contracts, contribute tests, integrate CLI, review the partner's PR, and verify the final application.
 - Feature branches use `feat/<issue-number>-<short-description>`.
 - Each engineer authors a PR and reviews the partner's PR. Each PR must receive substantive review observations; authors address feedback and may not approve their own PR.
