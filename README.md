@@ -40,3 +40,12 @@ See [docs/design-decisions.md](docs/design-decisions.md) for the shared design d
 
 ```bash
 python3 main.py
+```
+
+## Run the tests
+
+Run the complete automated test suite from the project root:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
